@@ -1,43 +1,49 @@
 import { motion } from "framer-motion";
 import { ExternalLink } from "lucide-react";
 import Layout from "@/components/Layout";
+import portfolioTechhub from "@/assets/portfolio-techhub.jpg";
+import portfolioStylebox from "@/assets/portfolio-stylebox.jpg";
+import portfolioHealthplus from "@/assets/portfolio-healthplus.jpg";
+import portfolioEdutrack from "@/assets/portfolio-edutrack.jpg";
+import portfolioCreative from "@/assets/portfolio-creative.jpg";
+import portfolioFoodie from "@/assets/portfolio-foodie.jpg";
 
 const projects = [
   {
     title: "TechHub Lagos",
     category: "Business Website",
     desc: "A modern corporate website for a Lagos-based tech incubator with event management and member portal.",
-    color: "from-primary/20 to-accent/20",
+    image: portfolioTechhub,
   },
   {
     title: "StyleBox E-Commerce",
     category: "Web Application",
     desc: "Full-featured e-commerce platform with cart, payments, and inventory management for a fashion brand.",
-    color: "from-accent/20 to-gold-light/20",
+    image: portfolioStylebox,
   },
   {
     title: "HealthPlus Clinic",
     category: "Landing Page",
     desc: "A clean, conversion-focused landing page for a healthcare startup with appointment booking.",
-    color: "from-navy-light/20 to-primary/20",
+    image: portfolioHealthplus,
   },
   {
     title: "EduTrack SaaS",
     category: "Micro SaaS",
     desc: "Student management platform with dashboards, analytics, and automated reporting for schools.",
-    color: "from-primary/20 to-navy-light/20",
+    image: portfolioEdutrack,
   },
   {
     title: "CreativeStudio Portfolio",
     category: "Portfolio Site",
     desc: "Stunning portfolio showcasing a photographer's work with lightbox gallery and smooth animations.",
-    color: "from-accent/20 to-primary/20",
+    image: portfolioCreative,
   },
   {
     title: "FoodieNg Blog",
     category: "Blog Platform",
     desc: "Content-rich food blog with recipe categories, newsletter signup, and social media integration.",
-    color: "from-gold-light/20 to-accent/20",
+    image: portfolioFoodie,
   },
 ];
 
@@ -69,10 +75,13 @@ const Portfolio = () => (
               transition={{ delay: i * 0.1 }}
               className="group rounded-xl overflow-hidden bg-card border border-border hover:shadow-xl hover:shadow-primary/5 transition-all duration-300"
             >
-              <div className={`h-48 bg-gradient-to-br ${p.color} flex items-center justify-center`}>
-                <span className="text-4xl font-heading font-bold text-foreground/20 group-hover:text-foreground/30 transition-colors">
-                  {p.title.charAt(0)}
-                </span>
+              <div className="h-48 overflow-hidden">
+                <img
+                  src={p.image}
+                  alt={p.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  loading="lazy"
+                />
               </div>
               <div className="p-6">
                 <span className="text-xs font-semibold text-accent uppercase tracking-wider">{p.category}</span>
