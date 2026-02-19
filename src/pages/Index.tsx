@@ -68,11 +68,11 @@ const Index = () => {
               Empowering businesses with cutting-edge websites, micro SaaS solutions, and creative designs that drive growth.
             </motion.p>
             <motion.div variants={fadeUp} custom={3} className="flex flex-wrap gap-4">
-              <Link to="/contact" className="px-8 py-3.5 rounded-lg gold-gradient text-accent-foreground font-semibold hover:opacity-90 transition-opacity flex items-center gap-2">
-                Get Started <ArrowRight size={18} />
+              <Link to="/store" className="px-8 py-3.5 rounded-lg gold-gradient text-accent-foreground font-semibold hover:opacity-90 transition-opacity flex items-center gap-2">
+                Browse Store <ArrowRight size={18} />
               </Link>
-              <Link to="/portfolio" className="px-8 py-3.5 rounded-lg border border-primary-foreground/30 text-primary-foreground font-semibold hover:bg-primary-foreground/10 transition-colors">
-                View Portfolio
+              <Link to="/contact" className="px-8 py-3.5 rounded-lg border border-primary-foreground/30 text-primary-foreground font-semibold hover:bg-primary-foreground/10 transition-colors">
+                Get Custom Build
               </Link>
             </motion.div>
           </motion.div>

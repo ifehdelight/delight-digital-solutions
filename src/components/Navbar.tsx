@@ -6,6 +6,7 @@ import logo from "@/assets/delight-logo.png";
 
 const navLinks = [
   { to: "/", label: "Home" },
+  { to: "/store", label: "Store" },
   { to: "/services", label: "Services" },
   { to: "/portfolio", label: "Portfolio" },
   { to: "/blog", label: "Blog" },
