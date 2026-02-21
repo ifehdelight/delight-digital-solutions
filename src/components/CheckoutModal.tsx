@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, CheckCircle, Shield, Mail, User } from "lucide-react";
+import { trackEvent } from "@/hooks/useAnalytics";
 import { type Product, formatPrice } from "@/data/products";
 
 interface Props {
@@ -18,7 +19,7 @@ const CheckoutModal = ({ product, open, onClose }: Props) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // In future, this will call Paystack/Stripe. For now, show success.
+    trackEvent("checkout_complete", { productId: product.id, productName: product.name, price: product.price });
     setStep("success");
   };
 

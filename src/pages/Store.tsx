@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Search, ShoppingBag, Star, Sparkles, TrendingUp, ArrowRight } from "lucide-react";
 import Layout from "@/components/Layout";
+import SEOHead from "@/components/SEOHead";
 import { products, categories, formatPrice, type ProductCategory } from "@/data/products";
 import { Badge } from "@/components/ui/badge";
 
@@ -22,6 +23,11 @@ const Store = () => {
 
   return (
     <Layout>
+      <SEOHead
+        title="Digital Product Store"
+        description="Browse premium ready-made websites, micro SaaS products, templates, UI kits, and design assets. Built by DE-LIGHT, ready for you."
+        canonical="https://delightsoftwares.com/store"
+      />
       {/* Hero */}
       <section className="hero-gradient py-24">
         <div className="container mx-auto px-4 text-center">

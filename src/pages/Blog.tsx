@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Calendar, Clock, ArrowRight, User } from "lucide-react";
 import Layout from "@/components/Layout";
+import SEOHead from "@/components/SEOHead";
 
 const blogPosts = [
   {
@@ -81,6 +82,18 @@ const Blog = () => {
 
   return (
     <Layout>
+      <SEOHead
+        title="Blog — Insights & Resources"
+        description="Tips, tutorials, and industry insights on web development, SaaS, branding, and digital marketing from DE-LIGHT Softwares."
+        canonical="https://delightsoftwares.com/blog"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Blog",
+          name: "DE-LIGHT Softwares Blog",
+          description: "Insights and resources on web development, SaaS, and digital marketing.",
+          publisher: { "@type": "Organization", name: "DE-LIGHT Softwares" },
+        }}
+      />
       <section className="hero-gradient py-24">
         <div className="container mx-auto px-4 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
