@@ -1,76 +1,10 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Calendar, Clock, ArrowRight, User } from "lucide-react";
+import { Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import SEOHead from "@/components/SEOHead";
-
-const blogPosts = [
-  {
-    id: "why-every-business-needs-website",
-    title: "Why Every Nigerian Business Needs a Website in 2026",
-    excerpt: "In today's digital age, having a professional website is no longer optional. Discover why your business needs an online presence to thrive.",
-    category: "Business",
-    date: "Feb 15, 2026",
-    readTime: "5 min read",
-    author: "DE-LIGHT Team",
-  },
-  {
-    id: "micro-saas-guide",
-    title: "The Complete Guide to Micro SaaS: Build, Launch, Profit",
-    excerpt: "Learn how to build small, focused software products that generate recurring revenue. From idea validation to your first paying customer.",
-    category: "SaaS",
-    date: "Feb 10, 2026",
-    readTime: "8 min read",
-    author: "DE-LIGHT Team",
-  },
-  {
-    id: "web-design-trends-2026",
-    title: "Top 10 Web Design Trends to Watch in 2026",
-    excerpt: "From glassmorphism to AI-driven layouts, explore the design trends shaping the future of the web.",
-    category: "Design",
-    date: "Feb 5, 2026",
-    readTime: "6 min read",
-    author: "DE-LIGHT Team",
-  },
-  {
-    id: "choosing-right-tech-stack",
-    title: "How to Choose the Right Tech Stack for Your Startup",
-    excerpt: "React, Next.js, or WordPress? We break down the pros and cons of popular tech stacks for startups and small businesses.",
-    category: "Development",
-    date: "Jan 28, 2026",
-    readTime: "7 min read",
-    author: "DE-LIGHT Team",
-  },
-  {
-    id: "branding-tips-startups",
-    title: "5 Branding Tips That Will Make Your Startup Stand Out",
-    excerpt: "Your brand is more than a logo. Learn how to create a memorable brand identity that resonates with your target audience.",
-    category: "Branding",
-    date: "Jan 20, 2026",
-    readTime: "4 min read",
-    author: "DE-LIGHT Team",
-  },
-  {
-    id: "seo-basics-beginners",
-    title: "SEO Basics: A Beginner's Guide to Ranking on Google",
-    excerpt: "Demystifying search engine optimization. Simple, actionable steps to get your website found by more people.",
-    category: "Marketing",
-    date: "Jan 15, 2026",
-    readTime: "6 min read",
-    author: "DE-LIGHT Team",
-  },
-];
-
-const categories = ["All", ...Array.from(new Set(blogPosts.map((p) => p.category)))];
-
-const categoryColors: Record<string, string> = {
-  Business: "bg-primary/10 text-primary",
-  SaaS: "bg-accent/10 text-accent-foreground",
-  Design: "bg-gold/10 text-foreground",
-  Development: "bg-navy-light/20 text-foreground",
-  Branding: "bg-accent/10 text-accent-foreground",
-  Marketing: "bg-primary/10 text-primary",
-};
+import { blogPosts, categories, categoryColors } from "@/data/blogPosts";
 
 const Blog = () => {
   const [activeCategory, setActiveCategory] = useState("All");
@@ -155,9 +89,12 @@ const Blog = () => {
                     <span className="flex items-center gap-1"><Calendar size={12} /> {post.date}</span>
                     <span className="flex items-center gap-1"><Clock size={12} /> {post.readTime}</span>
                   </div>
-                  <button className="inline-flex items-center gap-1 text-sm text-primary font-medium hover:underline">
+                  <Link
+                    to={`/blog/${post.id}`}
+                    className="inline-flex items-center gap-1 text-sm text-primary font-medium hover:underline"
+                  >
                     Read More <ArrowRight size={14} />
-                  </button>
+                  </Link>
                 </div>
               </motion.article>
             ))}
