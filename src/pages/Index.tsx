@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, Code, Palette, Globe, Zap, Star, CheckCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import Layout from "@/components/Layout";
+import SEOHead from "@/components/SEOHead";
 import heroBg from "@/assets/hero-bg.jpg";
 
 const fadeUp = {
@@ -47,6 +48,18 @@ const Index = () => {
 
   return (
     <Layout>
+      <SEOHead
+        title="Premium Digital Products & Web Solutions"
+        description="Browse and buy ready-made websites, micro SaaS products, templates, and design assets from DE-LIGHT Softwares. Premium quality, instant delivery."
+        canonical="https://delightsoftwares.com"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "DE-LIGHT Softwares",
+          url: "https://delightsoftwares.com",
+          description: "Premium digital products and web solutions for Nigerian businesses.",
+        }}
+      />
       {/* Hero */}
       <section className="relative min-h-[90vh] flex items-center overflow-hidden">
         <div

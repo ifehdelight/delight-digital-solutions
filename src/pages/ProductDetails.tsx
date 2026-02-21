@@ -6,6 +6,7 @@ import {
   Star, MessageCircle,
 } from "lucide-react";
 import Layout from "@/components/Layout";
+import SEOHead from "@/components/SEOHead";
 import { products, formatPrice } from "@/data/products";
 import { Badge } from "@/components/ui/badge";
 import CheckoutModal from "@/components/CheckoutModal";
@@ -33,6 +34,25 @@ const ProductDetails = () => {
 
   return (
     <Layout>
+      <SEOHead
+        title={product.name}
+        description={product.shortDesc}
+        canonical={`https://delightsoftwares.com/store/${product.id}`}
+        ogType="product"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: product.name,
+          description: product.description,
+          image: product.image,
+          offers: {
+            "@type": "Offer",
+            price: product.price,
+            priceCurrency: product.currency,
+            availability: "https://schema.org/InStock",
+          },
+        }}
+      />
       {/* Back */}
       <div className="bg-background border-b border-border">
         <div className="container mx-auto px-4 py-3">
