@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogIn, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "@/contexts/AuthContext";
 import logo from "@/assets/delight-logo.png";
 
 const navLinks = [
@@ -17,6 +18,7 @@ const navLinks = [
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const location = useLocation();
+  const { user } = useAuth();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-xl border-b border-border">
@@ -40,12 +42,21 @@ const Navbar = () => {
               {link.label}
             </Link>
           ))}
-          <Link
-            to="/contact"
-            className="px-5 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-opacity"
-          >
-            Get Started
-          </Link>
+          {user ? (
+            <Link
+              to="/dashboard"
+              className="px-5 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-opacity inline-flex items-center gap-2"
+            >
+              <User size={16} /> Dashboard
+            </Link>
+          ) : (
+            <Link
+              to="/login"
+              className="px-5 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-opacity inline-flex items-center gap-2"
+            >
+              <LogIn size={16} /> Log In
+            </Link>
+          )}
         </div>
 
         {/* Mobile toggle */}
@@ -82,13 +93,23 @@ const Navbar = () => {
                   {link.label}
                 </Link>
               ))}
-              <Link
-                to="/contact"
-                onClick={() => setOpen(false)}
-                className="px-5 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold text-center"
-              >
-                Get Started
-              </Link>
+              {user ? (
+                <Link
+                  to="/dashboard"
+                  onClick={() => setOpen(false)}
+                  className="px-5 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold text-center"
+                >
+                  Dashboard
+                </Link>
+              ) : (
+                <Link
+                  to="/login"
+                  onClick={() => setOpen(false)}
+                  className="px-5 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold text-center"
+                >
+                  Log In
+                </Link>
+              )}
             </div>
           </motion.div>
         )}
