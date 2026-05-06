@@ -44,6 +44,14 @@ const Navbar = () => {
               {link.label}
             </Link>
           ))}
+          {isAdmin && (
+            <Link
+              to="/admin"
+              className="px-4 py-2 rounded-lg border border-primary/50 text-primary text-sm font-semibold hover:bg-primary/10 transition-colors inline-flex items-center gap-2"
+            >
+              <Shield size={16} /> Admin
+            </Link>
+          )}
           {user ? (
             <Link
               to="/dashboard"
@@ -95,6 +103,15 @@ const Navbar = () => {
                   {link.label}
                 </Link>
               ))}
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  onClick={() => setOpen(false)}
+                  className="px-5 py-2 rounded-lg border border-primary/50 text-primary text-sm font-semibold text-center inline-flex items-center justify-center gap-2"
+                >
+                  <Shield size={16} /> Admin
+                </Link>
+              )}
               {user ? (
                 <Link
                   to="/dashboard"
