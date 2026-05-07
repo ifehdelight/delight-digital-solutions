@@ -14,6 +14,72 @@ export type Database = {
   }
   public: {
     Tables: {
+      customers: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          last_purchase_amount: number | null
+          last_purchase_product: string | null
+          name: string | null
+          notes: string | null
+          phone: string | null
+          source: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          last_purchase_amount?: number | null
+          last_purchase_product?: string | null
+          name?: string | null
+          notes?: string | null
+          phone?: string | null
+          source?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          last_purchase_amount?: number | null
+          last_purchase_product?: string | null
+          name?: string | null
+          notes?: string | null
+          phone?: string | null
+          source?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      newsletter_campaigns: {
+        Row: {
+          body: string
+          created_by: string | null
+          id: string
+          recipient_count: number
+          sent_at: string
+          subject: string
+        }
+        Insert: {
+          body: string
+          created_by?: string | null
+          id?: string
+          recipient_count?: number
+          sent_at?: string
+          subject: string
+        }
+        Update: {
+          body?: string
+          created_by?: string | null
+          id?: string
+          recipient_count?: number
+          sent_at?: string
+          subject?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           category: string
