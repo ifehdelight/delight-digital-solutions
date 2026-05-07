@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, CheckCircle, Shield, Mail, User } from "lucide-react";
+import { X, CheckCircle, Shield, Mail, User, Phone } from "lucide-react";
 import { trackEvent } from "@/hooks/useAnalytics";
 import { type Product, formatPrice } from "@/data/products";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface Props {
   product: Product;
@@ -16,9 +18,28 @@ const CheckoutModal = ({ product, open, onClose }: Props) => {
   const [step, setStep] = useState<Step>("form");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [saving, setSaving] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSaving(true);
+    const { error } = await supabase.from("customers").upsert(
+      {
+        email: email.trim().toLowerCase(),
+        name: name.trim() || null,
+        phone: phone.trim() || null,
+        source: "checkout",
+        last_purchase_product: product.name,
+        last_purchase_amount: product.price,
+      },
+      { onConflict: "email" }
+    );
+    setSaving(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     trackEvent("checkout_complete", { productId: product.id, productName: product.name, price: product.price });
     setStep("success");
   };
@@ -27,6 +48,7 @@ const CheckoutModal = ({ product, open, onClose }: Props) => {
     setStep("form");
     setName("");
     setEmail("");
+    setPhone("");
     onClose();
   };
 
