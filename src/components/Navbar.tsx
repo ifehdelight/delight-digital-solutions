@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, LogIn, User, Shield } from "lucide-react";
+import { Menu, X, Shield } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useAuth } from "@/contexts/AuthContext";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import logo from "@/assets/delight-logo.png";
 
@@ -19,7 +18,6 @@ const navLinks = [
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const location = useLocation();
-  const { user } = useAuth();
   const { isAdmin } = useIsAdmin();
 
   return (
@@ -29,16 +27,13 @@ const Navbar = () => {
           <img src={logo} alt="DE-LIGHT Softwares" className="h-14 w-auto" />
         </Link>
 
-        {/* Desktop */}
         <div className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
             <Link
               key={link.to}
               to={link.to}
               className={`text-sm font-medium transition-colors hover:text-primary ${
-                location.pathname === link.to
-                  ? "text-primary"
-                  : "text-muted-foreground"
+                location.pathname === link.to ? "text-primary" : "text-muted-foreground"
               }`}
             >
               {link.label}
@@ -52,24 +47,8 @@ const Navbar = () => {
               <Shield size={16} /> Admin
             </Link>
           )}
-          {user ? (
-            <Link
-              to="/dashboard"
-              className="px-5 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-opacity inline-flex items-center gap-2"
-            >
-              <User size={16} /> Dashboard
-            </Link>
-          ) : (
-            <Link
-              to="/login"
-              className="px-5 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-opacity inline-flex items-center gap-2"
-            >
-              <LogIn size={16} /> Log In
-            </Link>
-          )}
         </div>
 
-        {/* Mobile toggle */}
         <button
           className="md:hidden text-foreground"
           onClick={() => setOpen(!open)}
@@ -79,7 +58,6 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/* Mobile menu */}
       <AnimatePresence>
         {open && (
           <motion.div
@@ -95,9 +73,7 @@ const Navbar = () => {
                   to={link.to}
                   onClick={() => setOpen(false)}
                   className={`text-sm font-medium py-2 transition-colors ${
-                    location.pathname === link.to
-                      ? "text-primary"
-                      : "text-muted-foreground"
+                    location.pathname === link.to ? "text-primary" : "text-muted-foreground"
                   }`}
                 >
                   {link.label}
@@ -110,23 +86,6 @@ const Navbar = () => {
                   className="px-5 py-2 rounded-lg border border-primary/50 text-primary text-sm font-semibold text-center inline-flex items-center justify-center gap-2"
                 >
                   <Shield size={16} /> Admin
-                </Link>
-              )}
-              {user ? (
-                <Link
-                  to="/dashboard"
-                  onClick={() => setOpen(false)}
-                  className="px-5 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold text-center"
-                >
-                  Dashboard
-                </Link>
-              ) : (
-                <Link
-                  to="/login"
-                  onClick={() => setOpen(false)}
-                  className="px-5 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold text-center"
-                >
-                  Log In
                 </Link>
               )}
             </div>
