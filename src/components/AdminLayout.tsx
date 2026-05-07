@@ -1,5 +1,5 @@
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Package, PlusCircle, LogOut, Home } from "lucide-react";
+import { LayoutDashboard, Package, PlusCircle, LogOut, Home, Users, Mail } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import logo from "@/assets/delight-logo.png";
 import { toast } from "sonner";
@@ -23,7 +23,6 @@ const AdminLayout = () => {
 
   return (
     <div className="min-h-screen flex bg-background">
-      {/* Sidebar */}
       <aside className="hidden md:flex w-64 flex-col border-r border-border bg-card/50 backdrop-blur-xl">
         <Link to="/" className="flex items-center gap-2 px-6 py-5 border-b border-border">
           <img src={logo} alt="DE-LIGHT" className="h-10 w-auto" />
@@ -37,6 +36,12 @@ const AdminLayout = () => {
           </NavLink>
           <NavLink to="/admin/add" className={linkClass}>
             <PlusCircle size={18} /> Add Product
+          </NavLink>
+          <NavLink to="/admin/customers" className={linkClass}>
+            <Users size={18} /> Customers
+          </NavLink>
+          <NavLink to="/admin/newsletter" className={linkClass}>
+            <Mail size={18} /> Newsletter
           </NavLink>
         </nav>
         <div className="p-3 border-t border-border space-y-1">
@@ -55,9 +60,7 @@ const AdminLayout = () => {
         </div>
       </aside>
 
-      {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Mobile top bar */}
         <header className="md:hidden flex items-center justify-between px-4 py-3 border-b border-border bg-card/80 backdrop-blur-xl">
           <Link to="/admin" className="flex items-center gap-2">
             <img src={logo} alt="DE-LIGHT" className="h-8 w-auto" />
@@ -71,6 +74,8 @@ const AdminLayout = () => {
           <NavLink to="/admin" end className={linkClass}>Dashboard</NavLink>
           <NavLink to="/admin/products" className={linkClass}>Products</NavLink>
           <NavLink to="/admin/add" className={linkClass}>Add</NavLink>
+          <NavLink to="/admin/customers" className={linkClass}>Customers</NavLink>
+          <NavLink to="/admin/newsletter" className={linkClass}>Newsletter</NavLink>
         </nav>
         <main className="flex-1 p-4 md:p-8 overflow-x-auto">
           <Outlet />
