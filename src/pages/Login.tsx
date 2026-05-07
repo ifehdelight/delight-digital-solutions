@@ -27,7 +27,7 @@ const Login = () => {
       toast.error(error.message);
     } else {
       toast.success("Welcome back!");
-      navigate("/dashboard");
+      navigate("/admin");
     }
   };
 
@@ -37,8 +37,8 @@ const Login = () => {
       <section className="min-h-[80vh] flex items-center justify-center px-4">
         <Card className="w-full max-w-md border-border/50 shadow-lg">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-heading">Welcome Back</CardTitle>
-            <CardDescription>Sign in to your account</CardDescription>
+            <CardTitle className="text-2xl font-heading">Admin Login</CardTitle>
+            <CardDescription>Restricted area – authorized personnel only</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -58,12 +58,7 @@ const Login = () => {
                 </div>
               </div>
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="password">Password</Label>
-                  <Link to="/forgot-password" className="text-xs text-primary hover:underline">
-                    Forgot password?
-                  </Link>
-                </div>
+                <Label htmlFor="password">Password</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -82,12 +77,6 @@ const Login = () => {
                 {loading ? "Signing in…" : "Sign In"}
               </Button>
             </form>
-            <p className="mt-6 text-center text-sm text-muted-foreground">
-              Don't have an account?{" "}
-              <Link to="/signup" className="text-primary font-medium hover:underline">
-                Sign up
-              </Link>
-            </p>
           </CardContent>
         </Card>
       </section>
