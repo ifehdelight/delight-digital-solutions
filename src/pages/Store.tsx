@@ -1,38 +1,25 @@
 import { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Search, ShoppingBag, Star, Sparkles, TrendingUp, ArrowRight, ExternalLink, ShoppingCart, Mail } from "lucide-react";
+import { Search, ShoppingBag, Star, Sparkles, TrendingUp, ArrowRight, Mail } from "lucide-react";
 import Layout from "@/components/Layout";
 import SEOHead from "@/components/SEOHead";
-import { products, categories, formatPrice, type ProductCategory, type Product } from "@/data/products";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
-import CheckoutModal from "@/components/CheckoutModal";
 import { toast } from "sonner";
-
-interface DbProduct {
-  id: string;
-  name: string;
-  price: number;
-  category: string;
-  description: string | null;
-  image_url: string | null;
-  site_url: string | null;
-  in_stock: boolean;
-}
+import { PRODUCT_CATEGORIES, formatPrice, type DbProduct } from "@/data/productHelpers";
 
 const Store = () => {
   const [search, setSearch] = useState("");
-  const [activeCategory, setActiveCategory] = useState<"All" | ProductCategory | string>("All");
-  const [dbProducts, setDbProducts] = useState<DbProduct[]>([]);
-  const [checkoutProduct, setCheckoutProduct] = useState<Product | null>(null);
+  const [activeCategory, setActiveCategory] = useState<string>("All");
+  const [products, setProducts] = useState<DbProduct[]>([]);
   const [newsletterEmail, setNewsletterEmail] = useState("");
   const [subscribing, setSubscribing] = useState(false);
 
   useEffect(() => {
     const load = async () => {
       const { data } = await supabase.from("products").select("*").order("created_at", { ascending: false });
-      if (data) setDbProducts(data as DbProduct[]);
+      if (data) setProducts(data as unknown as DbProduct[]);
     };
     load();
     const channel = supabase
@@ -42,28 +29,20 @@ const Store = () => {
     return () => { supabase.removeChannel(channel); };
   }, []);
 
-  const filteredStatic = useMemo(() => {
+  const filtered = useMemo(() => {
     return products.filter((p) => {
+      const q = search.toLowerCase();
       const matchesSearch =
-        p.name.toLowerCase().includes(search.toLowerCase()) ||
-        p.shortDesc.toLowerCase().includes(search.toLowerCase());
+        p.name.toLowerCase().includes(q) ||
+        (p.short_desc || "").toLowerCase().includes(q) ||
+        (p.description || "").toLowerCase().includes(q);
       const matchesCategory = activeCategory === "All" || p.category === activeCategory;
       return matchesSearch && matchesCategory;
     });
-  }, [search, activeCategory]);
+  }, [products, search, activeCategory]);
 
-  const filteredDb = useMemo(() => {
-    return dbProducts.filter((p) => {
-      const matchesSearch =
-        p.name.toLowerCase().includes(search.toLowerCase()) ||
-        (p.description || "").toLowerCase().includes(search.toLowerCase());
-      const matchesCategory = activeCategory === "All" || p.category === activeCategory;
-      return matchesSearch && matchesCategory;
-    });
-  }, [dbProducts, search, activeCategory]);
-
-  const dbCategories = Array.from(new Set(dbProducts.map((p) => p.category)));
-  const allCategories = ["All", ...categories, ...dbCategories.filter((c) => !categories.includes(c as any))];
+  const dynamicCats = Array.from(new Set(products.map((p) => p.category)));
+  const allCategories = ["All", ...PRODUCT_CATEGORIES, ...dynamicCats.filter((c) => !PRODUCT_CATEGORIES.includes(c as any))];
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,24 +61,6 @@ const Store = () => {
       setNewsletterEmail("");
     }
   };
-
-  const buyDbProduct = (p: DbProduct) => {
-    setCheckoutProduct({
-      id: p.id,
-      name: p.name,
-      shortDesc: p.description || "",
-      description: p.description || "",
-      category: p.category as ProductCategory,
-      price: p.price,
-      currency: "USD",
-      image: p.image_url || "/placeholder.svg",
-      features: [],
-      techStack: [],
-      demoUrl: p.site_url || "#",
-    });
-  };
-
-  const totalCount = filteredStatic.length + filteredDb.length;
 
   return (
     <Layout>
@@ -138,7 +99,7 @@ const Store = () => {
             {allCategories.map((cat) => (
               <button
                 key={cat}
-                onClick={() => setActiveCategory(cat as any)}
+                onClick={() => setActiveCategory(cat)}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                   activeCategory === cat
                     ? "bg-primary text-primary-foreground"
@@ -150,69 +111,14 @@ const Store = () => {
             ))}
           </div>
 
-          {totalCount === 0 ? (
+          {filtered.length === 0 ? (
             <div className="text-center py-20">
               <ShoppingBag className="mx-auto text-muted-foreground mb-4" size={48} />
               <p className="text-muted-foreground text-lg">No products found. Try a different search or category.</p>
             </div>
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {/* Admin-managed (DB) products */}
-              {filteredDb.map((p, i) => (
-                <motion.div
-                  key={p.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.05 }}
-                  className="group rounded-xl bg-card border border-border hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 overflow-hidden flex flex-col"
-                >
-                  <div className="relative overflow-hidden aspect-[4/3] bg-muted">
-                    {p.image_url ? (
-                      <img src={p.image_url} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                        <ShoppingBag size={32} />
-                      </div>
-                    )}
-                    {!p.in_stock && (
-                      <Badge className="absolute top-3 left-3 bg-muted text-muted-foreground">Sold out</Badge>
-                    )}
-                  </div>
-                  <div className="p-5 flex-1 flex flex-col">
-                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-1">{p.category}</p>
-                    <h3 className="font-heading font-semibold text-foreground mb-1.5">{p.name}</h3>
-                    {p.description && (
-                      <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{p.description}</p>
-                    )}
-                    <div className="mt-auto space-y-3">
-                      <div className="text-lg font-bold text-foreground">{formatPrice(p.price)}</div>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => buyDbProduct(p)}
-                          disabled={!p.in_stock}
-                          className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg gold-gradient text-accent-foreground text-sm font-semibold hover:opacity-90 transition disabled:opacity-50"
-                        >
-                          <ShoppingCart size={14} /> Buy
-                        </button>
-                        {p.site_url && (
-                          <a
-                            href={p.site_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border border-border text-foreground text-sm font-medium hover:bg-muted transition"
-                          >
-                            <ExternalLink size={14} /> Visit
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-
-              {/* Static catalogue products */}
-              {filteredStatic.map((product, i) => (
+              {filtered.map((product, i) => (
                 <motion.div
                   key={product.id}
                   initial={{ opacity: 0, y: 30 }}
@@ -221,35 +127,44 @@ const Store = () => {
                   transition={{ delay: i * 0.05 }}
                 >
                   <Link
-                    to={`/store/${product.id}`}
-                    className="group block rounded-xl bg-card border border-border hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 overflow-hidden"
+                    to={`/store/${product.slug || product.id}`}
+                    className="group block rounded-xl bg-card border border-border hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 overflow-hidden h-full"
                   >
-                    <div className="relative overflow-hidden aspect-[4/3]">
-                      <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                      <div className="absolute top-3 left-3 flex gap-1.5">
-                        {product.isBestSeller && (
+                    <div className="relative overflow-hidden aspect-[4/3] bg-muted">
+                      {product.image_url ? (
+                        <img src={product.image_url} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                          <ShoppingBag size={32} />
+                        </div>
+                      )}
+                      <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
+                        {product.is_best_seller && (
                           <Badge className="bg-accent text-accent-foreground text-xs gap-1">
                             <TrendingUp size={12} /> Best Seller
                           </Badge>
                         )}
-                        {product.isPopular && (
+                        {product.is_popular && (
                           <Badge className="bg-primary text-primary-foreground text-xs gap-1">
                             <Star size={12} /> Popular
                           </Badge>
                         )}
-                        {product.isNew && (
+                        {product.is_new && (
                           <Badge className="bg-green-600 text-primary-foreground text-xs gap-1">
                             <Sparkles size={12} /> New
                           </Badge>
                         )}
                       </div>
+                      {!product.in_stock && (
+                        <Badge className="absolute top-3 right-3 bg-muted text-muted-foreground">Sold out</Badge>
+                      )}
                     </div>
                     <div className="p-5">
                       <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-1">{product.category}</p>
                       <h3 className="font-heading font-semibold text-foreground mb-1.5 group-hover:text-primary transition-colors">{product.name}</h3>
-                      <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{product.shortDesc}</p>
+                      <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{product.short_desc || product.description}</p>
                       <div className="flex items-center justify-between">
-                        <span className="text-lg font-bold text-foreground">{formatPrice(product.price)}</span>
+                        <span className="text-lg font-bold text-foreground">{formatPrice(product.price, product.currency)}</span>
                         <span className="text-sm text-primary font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
                           View Details <ArrowRight size={14} />
                         </span>
@@ -301,14 +216,6 @@ const Store = () => {
           </Link>
         </div>
       </section>
-
-      {checkoutProduct && (
-        <CheckoutModal
-          product={checkoutProduct}
-          open={!!checkoutProduct}
-          onClose={() => setCheckoutProduct(null)}
-        />
-      )}
     </Layout>
   );
 };

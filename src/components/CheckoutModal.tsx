@@ -2,12 +2,21 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, CheckCircle, Shield, Mail, User, Phone } from "lucide-react";
 import { trackEvent } from "@/hooks/useAnalytics";
-import { type Product, formatPrice } from "@/data/products";
+import { formatPrice } from "@/data/productHelpers";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
+export interface CheckoutProduct {
+  id: string;
+  name: string;
+  category: string;
+  price: number;
+  currency?: string;
+  image: string;
+}
+
 interface Props {
-  product: Product;
+  product: CheckoutProduct;
   open: boolean;
   onClose: () => void;
 }
@@ -91,7 +100,7 @@ const CheckoutModal = ({ product, open, onClose }: Props) => {
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-foreground text-sm truncate">{product.name}</p>
                   <p className="text-xs text-muted-foreground">{product.category}</p>
-                  <p className="text-lg font-bold text-foreground mt-1">{formatPrice(product.price)}</p>
+                  <p className="text-lg font-bold text-foreground mt-1">{formatPrice(product.price, product.currency)}</p>
                 </div>
               </div>
 
@@ -143,7 +152,7 @@ const CheckoutModal = ({ product, open, onClose }: Props) => {
                   disabled={saving}
                   className="w-full py-3 rounded-lg gold-gradient text-accent-foreground font-semibold hover:opacity-90 transition-opacity disabled:opacity-60"
                 >
-                  {saving ? "Processing…" : `Pay ${formatPrice(product.price)}`}
+                  {saving ? "Processing…" : `Pay ${formatPrice(product.price, product.currency)}`}
                 </button>
               </form>
 
