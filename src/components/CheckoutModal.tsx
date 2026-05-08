@@ -2,12 +2,21 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, CheckCircle, Shield, Mail, User, Phone } from "lucide-react";
 import { trackEvent } from "@/hooks/useAnalytics";
-import { type Product, formatPrice } from "@/data/products";
+import { formatPrice } from "@/data/productHelpers";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
+export interface CheckoutProduct {
+  id: string;
+  name: string;
+  category: string;
+  price: number;
+  currency?: string;
+  image: string;
+}
+
 interface Props {
-  product: Product;
+  product: CheckoutProduct;
   open: boolean;
   onClose: () => void;
 }
