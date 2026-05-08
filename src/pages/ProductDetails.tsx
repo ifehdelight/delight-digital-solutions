@@ -1,21 +1,52 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   ArrowLeft, ExternalLink, ShoppingCart, CheckCircle, Shield, Clock, Zap,
-  Star, MessageCircle,
+  Star, MessageCircle, TrendingUp, Sparkles,
 } from "lucide-react";
 import Layout from "@/components/Layout";
 import SEOHead from "@/components/SEOHead";
-import { products, formatPrice } from "@/data/products";
 import { Badge } from "@/components/ui/badge";
 import CheckoutModal from "@/components/CheckoutModal";
+import { supabase } from "@/integrations/supabase/client";
+import { formatPrice, type DbProduct } from "@/data/productHelpers";
+import PageSkeleton from "@/components/PageSkeleton";
 
 const ProductDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const product = products.find((p) => p.id === id);
+  const [product, setProduct] = useState<DbProduct | null>(null);
+  const [related, setRelated] = useState<DbProduct[]>([]);
+  const [loading, setLoading] = useState(true);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+
+  useEffect(() => {
+    const load = async () => {
+      if (!id) return;
+      setLoading(true);
+      // try slug first, then id
+      let { data } = await supabase.from("products").select("*").eq("slug", id).maybeSingle();
+      if (!data) {
+        const r = await supabase.from("products").select("*").eq("id", id).maybeSingle();
+        data = r.data;
+      }
+      if (data) {
+        setProduct(data as unknown as DbProduct);
+        const { data: rel } = await supabase
+          .from("products")
+          .select("*")
+          .eq("category", data.category)
+          .neq("id", data.id)
+          .limit(3);
+        setRelated((rel || []) as unknown as DbProduct[]);
+      }
+      setLoading(false);
+    };
+    load();
+  }, [id]);
+
+  if (loading) return <Layout><PageSkeleton /></Layout>;
 
   if (!product) {
     return (
@@ -30,30 +61,27 @@ const ProductDetails = () => {
     );
   }
 
-  const related = products.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 3);
-
   return (
     <Layout>
       <SEOHead
         title={product.name}
-        description={product.shortDesc}
-        canonical={`https://delightsoftwares.com/store/${product.id}`}
+        description={product.short_desc || product.description || product.name}
+        canonical={`https://delightsoftwares.com/store/${product.slug || product.id}`}
         ogType="product"
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "Product",
           name: product.name,
-          description: product.description,
-          image: product.image,
+          description: product.description || product.short_desc,
+          image: product.image_url,
           offers: {
             "@type": "Offer",
             price: product.price,
             priceCurrency: product.currency,
-            availability: "https://schema.org/InStock",
+            availability: product.in_stock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
           },
         }}
       />
-      {/* Back */}
       <div className="bg-background border-b border-border">
         <div className="container mx-auto px-4 py-3">
           <button onClick={() => navigate(-1)} className="text-sm text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors">
@@ -62,47 +90,48 @@ const ProductDetails = () => {
         </div>
       </div>
 
-      {/* Product Hero */}
       <section className="py-12 bg-background">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-10">
-            {/* Image */}
-            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="rounded-xl overflow-hidden border border-border">
-              <img src={product.image} alt={product.name} className="w-full h-auto object-cover" />
+            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="rounded-xl overflow-hidden border border-border bg-muted">
+              {product.image_url && (
+                <img src={product.image_url} alt={product.name} className="w-full h-auto object-cover" />
+              )}
             </motion.div>
 
-            {/* Info */}
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="flex flex-col">
               <div className="flex flex-wrap gap-2 mb-3">
                 <Badge variant="secondary">{product.category}</Badge>
-                {product.isBestSeller && <Badge className="bg-accent text-accent-foreground">Best Seller</Badge>}
-                {product.isPopular && <Badge className="bg-primary text-primary-foreground">Popular</Badge>}
-                {product.isNew && <Badge className="bg-green-600 text-primary-foreground">New</Badge>}
+                {product.is_best_seller && <Badge className="bg-accent text-accent-foreground gap-1"><TrendingUp size={12}/> Best Seller</Badge>}
+                {product.is_popular && <Badge className="bg-primary text-primary-foreground gap-1"><Star size={12}/> Popular</Badge>}
+                {product.is_new && <Badge className="bg-green-600 text-primary-foreground gap-1"><Sparkles size={12}/> New</Badge>}
               </div>
 
               <h1 className="text-3xl md:text-4xl font-heading font-bold text-foreground mb-3">{product.name}</h1>
-              <p className="text-muted-foreground leading-relaxed mb-6">{product.description}</p>
+              <p className="text-muted-foreground leading-relaxed mb-6">{product.description || product.short_desc}</p>
 
               <div className="text-3xl font-bold text-foreground mb-6">
-                {formatPrice(product.price)}
+                {formatPrice(product.price, product.currency)}
               </div>
 
-              {/* Actions */}
               <div className="flex flex-wrap gap-3 mb-8">
                 <button
                   onClick={() => setCheckoutOpen(true)}
-                  className="px-8 py-3.5 rounded-lg gold-gradient text-accent-foreground font-semibold hover:opacity-90 transition-opacity flex items-center gap-2"
+                  disabled={!product.in_stock}
+                  className="px-8 py-3.5 rounded-lg gold-gradient text-accent-foreground font-semibold hover:opacity-90 transition-opacity flex items-center gap-2 disabled:opacity-50"
                 >
                   <ShoppingCart size={18} /> Buy Now
                 </button>
-                <a
-                  href={product.demoUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-8 py-3.5 rounded-lg border border-border text-foreground font-semibold hover:bg-muted transition-colors flex items-center gap-2"
-                >
-                  <ExternalLink size={18} /> Live Demo
-                </a>
+                {(product.demo_url || product.site_url) && (
+                  <a
+                    href={product.demo_url || product.site_url || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-8 py-3.5 rounded-lg border border-border text-foreground font-semibold hover:bg-muted transition-colors flex items-center gap-2"
+                  >
+                    <ExternalLink size={18} /> Live Demo
+                  </a>
+                )}
                 <a
                   href={`https://wa.me/2347041598822?text=${encodeURIComponent(`Hi, I'm interested in "${product.name}". Can I get more info?`)}`}
                   target="_blank"
@@ -113,7 +142,6 @@ const ProductDetails = () => {
                 </a>
               </div>
 
-              {/* Trust badges */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {[
                   { icon: Shield, label: "Secure Payment" },
@@ -132,39 +160,40 @@ const ProductDetails = () => {
         </div>
       </section>
 
-      {/* Features & Tech */}
-      <section className="py-16 bg-muted">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-10 max-w-4xl mx-auto">
-            {/* Features */}
-            <div>
-              <h2 className="text-xl font-heading font-bold text-foreground mb-5">Features Included</h2>
-              <ul className="space-y-3">
-                {product.features.map((f) => (
-                  <li key={f} className="flex items-start gap-3">
-                    <CheckCircle size={18} className="text-primary mt-0.5 shrink-0" />
-                    <span className="text-muted-foreground">{f}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Tech stack */}
-            <div>
-              <h2 className="text-xl font-heading font-bold text-foreground mb-5">Built With</h2>
-              <div className="flex flex-wrap gap-2">
-                {product.techStack.map((t) => (
-                  <Badge key={t} variant="outline" className="text-sm py-1.5 px-3">
-                    {t}
-                  </Badge>
-                ))}
-              </div>
+      {(product.features.length > 0 || product.tech_stack.length > 0) && (
+        <section className="py-16 bg-muted">
+          <div className="container mx-auto px-4">
+            <div className="grid md:grid-cols-2 gap-10 max-w-4xl mx-auto">
+              {product.features.length > 0 && (
+                <div>
+                  <h2 className="text-xl font-heading font-bold text-foreground mb-5">Features Included</h2>
+                  <ul className="space-y-3">
+                    {product.features.map((f) => (
+                      <li key={f} className="flex items-start gap-3">
+                        <CheckCircle size={18} className="text-primary mt-0.5 shrink-0" />
+                        <span className="text-muted-foreground">{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {product.tech_stack.length > 0 && (
+                <div>
+                  <h2 className="text-xl font-heading font-bold text-foreground mb-5">Built With</h2>
+                  <div className="flex flex-wrap gap-2">
+                    {product.tech_stack.map((t) => (
+                      <Badge key={t} variant="outline" className="text-sm py-1.5 px-3">
+                        {t}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      {/* Related Products */}
       {related.length > 0 && (
         <section className="py-16 bg-background">
           <div className="container mx-auto px-4">
@@ -173,13 +202,13 @@ const ProductDetails = () => {
             </h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
               {related.map((p) => (
-                <Link key={p.id} to={`/store/${p.id}`} className="group rounded-xl bg-card border border-border hover:border-primary/30 hover:shadow-xl transition-all overflow-hidden">
-                  <div className="overflow-hidden aspect-[4/3]">
-                    <img src={p.image} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <Link key={p.id} to={`/store/${p.slug || p.id}`} className="group rounded-xl bg-card border border-border hover:border-primary/30 hover:shadow-xl transition-all overflow-hidden">
+                  <div className="overflow-hidden aspect-[4/3] bg-muted">
+                    {p.image_url && <img src={p.image_url} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />}
                   </div>
                   <div className="p-4">
                     <h3 className="font-heading font-semibold text-foreground text-sm mb-1">{p.name}</h3>
-                    <p className="text-sm font-bold text-foreground">{formatPrice(p.price)}</p>
+                    <p className="text-sm font-bold text-foreground">{formatPrice(p.price, p.currency)}</p>
                   </div>
                 </Link>
               ))}
@@ -188,7 +217,18 @@ const ProductDetails = () => {
         </section>
       )}
 
-      <CheckoutModal product={product} open={checkoutOpen} onClose={() => setCheckoutOpen(false)} />
+      <CheckoutModal
+        product={{
+          id: product.id,
+          name: product.name,
+          category: product.category,
+          price: product.price,
+          currency: product.currency,
+          image: product.image_url || "/placeholder.svg",
+        }}
+        open={checkoutOpen}
+        onClose={() => setCheckoutOpen(false)}
+      />
     </Layout>
   );
 };
