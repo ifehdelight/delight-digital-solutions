@@ -100,7 +100,7 @@ const CheckoutModal = ({ product, open, onClose }: Props) => {
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-foreground text-sm truncate">{product.name}</p>
                   <p className="text-xs text-muted-foreground">{product.category}</p>
-                  <p className="text-lg font-bold text-foreground mt-1">{formatPrice(product.price)}</p>
+                  <p className="text-lg font-bold text-foreground mt-1">{formatPrice(product.price, product.currency)}</p>
                 </div>
               </div>
 
