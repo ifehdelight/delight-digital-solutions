@@ -18,7 +18,7 @@ const AdminLayout = () => {
   const handleSignOut = async () => {
     await signOut();
     toast.success("Signed out");
-    navigate("/login");
+    navigate("/admin/login");
   };
 
   return (

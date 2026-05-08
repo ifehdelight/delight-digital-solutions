@@ -8,7 +8,7 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAdmin, loading: roleLoading } = useIsAdmin();
 
   if (authLoading || roleLoading) return <PageSkeleton />;
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) return <Navigate to="/admin/login" replace />;
   if (!isAdmin) return <Navigate to="/" replace />;
 
   return <>{children}</>;
