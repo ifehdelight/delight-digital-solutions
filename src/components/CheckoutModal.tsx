@@ -152,7 +152,7 @@ const CheckoutModal = ({ product, open, onClose }: Props) => {
                   disabled={saving}
                   className="w-full py-3 rounded-lg gold-gradient text-accent-foreground font-semibold hover:opacity-90 transition-opacity disabled:opacity-60"
                 >
-                  {saving ? "Processing…" : `Pay ${formatPrice(product.price)}`}
+                  {saving ? "Processing…" : `Pay ${formatPrice(product.price, product.currency)}`}
                 </button>
               </form>
 
