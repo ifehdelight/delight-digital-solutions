@@ -1,73 +1,76 @@
-# Welcome to your Lovable project
+# DE-LIGHT Softwares
 
-## Project info
+DE-LIGHT Softwares creates premium digital solutions for Micro SaaS ventures, startups, and businesses that need custom websites with polished design and strong performance.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Our Mission
 
-## How can I edit this code?
+We deliver modern digital products that combine strategic clarity with technical excellence.
+Our focus is on building scalable Micro SaaS platforms and bespoke websites that help brands launch faster, engage users, and grow with confidence.
 
-There are several ways of editing your application.
+## What this repository contains
 
-**Use Lovable**
+This repository includes a production-ready frontend and backend integration tailored for a digital services studio. It is designed as a professional codebase for:
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+- Micro SaaS applications
+- Custom websites and landing pages
+- Business portfolio and service offerings
+- Client dashboards and membership experiences
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
+## Tech stack
 
 This project is built with:
 
-- Vite
-- TypeScript
 - React
-- shadcn-ui
+- Vite
 - Tailwind CSS
+- Supabase
 
-## How can I deploy this project?
+## Getting started
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+### Prerequisites
 
-## Can I connect a custom domain to my Lovable project?
+- Node.js
+- npm or Bun
+- A Supabase project for authentication, database, and storage services
 
-Yes, you can!
+### Local setup
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+```sh
+git clone <YOUR_GIT_URL>
+cd <YOUR_PROJECT_NAME>
+npm install
+npm run dev
+```
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+The development server will start locally and provide a live preview while you work.
+
+## Project structure
+
+- `src/` — application source code
+- `src/pages/` — page-level components and routes
+- `src/components/` — reusable UI components and layout elements
+- `supabase/` — backend configuration, functions, and database migrations
+
+## Deployment
+
+This codebase is ready to deploy on modern hosting platforms supporting Vite applications.
+
+Recommended deployment steps:
+
+1. Build the application:
+
+```sh
+npm run build
+```
+
+2. Deploy the generated output to your hosting provider.
+
+3. Configure Supabase environment variables and production settings.
+
+## Brand guidance
+
+Use this repository as the foundation for DE-LIGHT Softwares projects. Replace placeholder content with your company messaging, customer stories, service descriptions, and portfolio assets.
+
+## Support
+
+For questions about the codebase or project setup, consult the repository documentation and review the `supabase/` folder for backend integration details.
