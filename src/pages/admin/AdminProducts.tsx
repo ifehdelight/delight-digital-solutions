@@ -36,7 +36,7 @@ const AdminProducts = () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("products")
-      .select("id, name, price, category, image_url, in_stock")
+      .select("id, name, price, currency, category, image_url, in_stock")
       .order("created_at", { ascending: false });
     if (error) toast.error(error.message);
     else setProducts(data || []);
