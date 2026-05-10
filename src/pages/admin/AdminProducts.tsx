@@ -113,7 +113,7 @@ const AdminProducts = () => {
                       </td>
                       <td className="px-4 py-3 font-medium">{p.name}</td>
                       <td className="px-4 py-3 text-muted-foreground">{p.category}</td>
-                      <td className="px-4 py-3">${Number(p.price).toFixed(2)}</td>
+                      <td className="px-4 py-3">{formatPrice(Number(p.price), p.currency)}</td>
                       <td className="px-4 py-3">
                         <Badge variant={p.in_stock ? "default" : "secondary"}>
                           {p.in_stock ? "In Stock" : "Out"}
