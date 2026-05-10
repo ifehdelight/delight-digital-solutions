@@ -58,12 +58,19 @@ export const trackEvent = (event: string, data?: Record<string, unknown>) => {
   // fetch('/api/analytics', { method: 'POST', body: JSON.stringify(evt) });
 };
 
-/** Auto-tracks page views on route change */
+/** Auto-tracks page views on route change (locally + Supabase) */
 export const usePageView = () => {
   const location = useLocation();
 
   useEffect(() => {
     trackEvent("page_view", { path: location.pathname });
+    // Persist to DB for admin analytics (fire-and-forget, ignore errors)
+    void supabase.from("page_views").insert({
+      path: location.pathname,
+      referrer: document.referrer || null,
+      user_agent: navigator.userAgent,
+      session_id: getSessionId(),
+    });
   }, [location.pathname]);
 };
 
