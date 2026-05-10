@@ -15,11 +15,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import SEOHead from "@/components/SEOHead";
+import { formatPrice } from "@/data/productHelpers";
 
 interface Product {
   id: string;
   name: string;
   price: number;
+  currency: string;
   category: string;
   image_url: string | null;
   in_stock: boolean;
