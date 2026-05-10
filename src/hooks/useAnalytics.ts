@@ -1,5 +1,16 @@
 import { useEffect, useCallback } from "react";
 import { useLocation } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+
+const SESSION_KEY = "delight_session_id";
+const getSessionId = () => {
+  let s = sessionStorage.getItem(SESSION_KEY);
+  if (!s) {
+    s = crypto.randomUUID();
+    sessionStorage.setItem(SESSION_KEY, s);
+  }
+  return s;
+};
 
 // Lightweight analytics tracker — logs events locally and sends to
 // any future endpoint (Google Analytics, Mixpanel, etc.)
