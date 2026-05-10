@@ -15,11 +15,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import SEOHead from "@/components/SEOHead";
+import { formatPrice } from "@/data/productHelpers";
 
 interface Product {
   id: string;
   name: string;
   price: number;
+  currency: string;
   category: string;
   image_url: string | null;
   in_stock: boolean;
@@ -34,7 +36,7 @@ const AdminProducts = () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("products")
-      .select("id, name, price, category, image_url, in_stock")
+      .select("id, name, price, currency, category, image_url, in_stock")
       .order("created_at", { ascending: false });
     if (error) toast.error(error.message);
     else setProducts(data || []);
@@ -111,7 +113,7 @@ const AdminProducts = () => {
                       </td>
                       <td className="px-4 py-3 font-medium">{p.name}</td>
                       <td className="px-4 py-3 text-muted-foreground">{p.category}</td>
-                      <td className="px-4 py-3">${Number(p.price).toFixed(2)}</td>
+                      <td className="px-4 py-3">{formatPrice(Number(p.price), p.currency)}</td>
                       <td className="px-4 py-3">
                         <Badge variant={p.in_stock ? "default" : "secondary"}>
                           {p.in_stock ? "In Stock" : "Out"}

@@ -1,5 +1,16 @@
 import { useEffect, useCallback } from "react";
 import { useLocation } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+
+const SESSION_KEY = "delight_session_id";
+const getSessionId = () => {
+  let s = sessionStorage.getItem(SESSION_KEY);
+  if (!s) {
+    s = crypto.randomUUID();
+    sessionStorage.setItem(SESSION_KEY, s);
+  }
+  return s;
+};
 
 // Lightweight analytics tracker — logs events locally and sends to
 // any future endpoint (Google Analytics, Mixpanel, etc.)
@@ -47,12 +58,19 @@ export const trackEvent = (event: string, data?: Record<string, unknown>) => {
   // fetch('/api/analytics', { method: 'POST', body: JSON.stringify(evt) });
 };
 
-/** Auto-tracks page views on route change */
+/** Auto-tracks page views on route change (locally + Supabase) */
 export const usePageView = () => {
   const location = useLocation();
 
   useEffect(() => {
     trackEvent("page_view", { path: location.pathname });
+    // Persist to DB for admin analytics (fire-and-forget, ignore errors)
+    void supabase.from("page_views").insert({
+      path: location.pathname,
+      referrer: document.referrer || null,
+      user_agent: navigator.userAgent,
+      session_id: getSessionId(),
+    });
   }, [location.pathname]);
 };
 
