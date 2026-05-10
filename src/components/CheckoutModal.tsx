@@ -33,20 +33,21 @@ const CheckoutModal = ({ product, open, onClose }: Props) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    const { error } = await supabase.from("customers").upsert(
-      {
+    const { data, error } = await supabase.functions.invoke("track-customer", {
+      body: {
         email: email.trim().toLowerCase(),
-        name: name.trim() || null,
-        phone: phone.trim() || null,
+        name: name.trim() || undefined,
+        phone: phone.trim() || undefined,
         source: "checkout",
+        product_id: product.id,
         last_purchase_product: product.name,
         last_purchase_amount: product.price,
+        currency: product.currency || "NGN",
       },
-      { onConflict: "email" }
-    );
+    });
     setSaving(false);
-    if (error) {
-      toast.error(error.message);
+    if (error || (data as any)?.error) {
+      toast.error((data as any)?.error || error?.message || "Checkout failed");
       return;
     }
     trackEvent("checkout_complete", { productId: product.id, productName: product.name, price: product.price });
