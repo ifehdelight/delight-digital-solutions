@@ -48,14 +48,11 @@ const Store = () => {
     e.preventDefault();
     if (!newsletterEmail.trim()) return;
     setSubscribing(true);
-    const { error } = await supabase
-      .from("customers")
-      .upsert(
-        { email: newsletterEmail.trim().toLowerCase(), source: "newsletter" },
-        { onConflict: "email" }
-      );
+    const { data, error } = await supabase.functions.invoke("track-customer", {
+      body: { email: newsletterEmail.trim().toLowerCase(), source: "newsletter" },
+    });
     setSubscribing(false);
-    if (error) toast.error(error.message);
+    if (error || (data as any)?.error) toast.error((data as any)?.error || error?.message || "Subscribe failed");
     else {
       toast.success("Subscribed! We'll keep you posted.");
       setNewsletterEmail("");
